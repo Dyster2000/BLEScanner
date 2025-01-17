@@ -18,9 +18,10 @@ public class LogViewModel
 
     private static void CopyLogToClipboard()
     {
+        var log = App.Logger.Messages;
         var sb = new StringBuilder();
 
-        sb.AppendJoin("\r\n", Messages);
+        sb.AppendJoin("\r\n", log);
         Clipboard.Default.SetTextAsync(sb.ToString());
     }
 }
