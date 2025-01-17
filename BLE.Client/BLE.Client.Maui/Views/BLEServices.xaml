@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:local="clr-namespace:BLE.Client.Maui.ViewModels"
+             x:DataType="local:BLEServicesViewModel"
+             x:Class="BLE.Client.Maui.Views.BLEServices"
+             Title="BLE Services">
+  <ContentPage.Content>
+    <StackLayout Orientation="Vertical">
+      <!-- Display selected BLE Device -->
+      <Label Text="{Binding SelectedDeviceName}"
+                   x:Name="bleDevice" FontAttributes="Bold" />
+
+      <Label Text="Services" FontSize="Medium" FontAttributes="Bold" Margin="20,20,0,0"/>
+      <!-- The list below shows the services available on the selected BLE device -->
+      <CollectionView x:Name="ServiceList" Grid.Row="2" ItemsSource="{Binding Path=BLEServices}" SelectionMode="Single" SelectionChanged="Service_SelectionChanged"
+                        Margin="5, 0" Background="{AppThemeBinding Light={StaticResource Gray200}, Dark={StaticResource Gray900}}">
+        <CollectionView.Resources>
+          <Style TargetType="VerticalStackLayout">
+            <Setter Property="VisualStateManager.VisualStateGroups">
+              <VisualStateGroupList>
+                <VisualStateGroup x:Name="CommonStates">
+                  <VisualState x:Name="Normal"/>
+                  <VisualState x:Name="Selected">
+                    <VisualState.Setters>
+                      <Setter Property="Background" Value="{AppThemeBinding Light=LightSkyBlue, Dark=DarkBlue}"/>
+                    </VisualState.Setters>
+                  </VisualState>
+                </VisualStateGroup>
+              </VisualStateGroupList>
+            </Setter>
+          </Style>
+        </CollectionView.Resources>
+        <CollectionView.ItemTemplate>
+          <DataTemplate x:DataType="{x:Type local:BLEServiceViewModel}">
+            <VerticalStackLayout Padding="5, 10">
+              <Label Text="{Binding Name}" FontSize="20" FontAttributes="Bold"/>
+              <Label Text="{Binding ServiceId}" FontSize="16" FontAttributes="Italic"/>
+              <!--<Label Text="{Binding Adverts}"/>-->
+            </VerticalStackLayout>
+          </DataTemplate>
+        </CollectionView.ItemTemplate>
+      </CollectionView>
+
+      <Label Text="Characteristics" FontSize="Medium" FontAttributes="Bold" Margin="20,20,0,0"/>
+      <!-- The list below shows the characteristics available on the selected BLE device -->
+      <CollectionView x:Name="CharacteristicList" Grid.Row="2" ItemsSource="{Binding Path=BLECharacteristics}" SelectionMode="Single"
+                        Margin="5, 0" Background="{AppThemeBinding Light={StaticResource Gray200}, Dark={StaticResource Gray900}}">
+        <CollectionView.Resources>
+          <Style TargetType="VerticalStackLayout">
+            <Setter Property="VisualStateManager.VisualStateGroups">
+              <VisualStateGroupList>
+                <VisualStateGroup x:Name="CommonStates">
+                  <VisualState x:Name="Normal"/>
+                  <VisualState x:Name="Selected">
+                    <VisualState.Setters>
+                      <Setter Property="Background" Value="{AppThemeBinding Light=LightSkyBlue, Dark=DarkBlue}"/>
+                    </VisualState.Setters>
+                  </VisualState>
+                </VisualStateGroup>
+              </VisualStateGroupList>
+            </Setter>
+          </Style>
+        </CollectionView.Resources>
+        <CollectionView.ItemTemplate>
+          <DataTemplate x:DataType="{x:Type local:BLECharacteristicViewModel}">
+            <VerticalStackLayout Padding="5, 10">
+              <Label Text="{Binding Name}" FontSize="20" FontAttributes="Bold"/>
+              <Label Text="{Binding CharacteristicId}" FontSize="16" FontAttributes="Italic"/>
+              <!--<Label Text="{Binding Adverts}"/>-->
+            </VerticalStackLayout>
+          </DataTemplate>
+        </CollectionView.ItemTemplate>
+      </CollectionView>
+
+    </StackLayout>
+  </ContentPage.Content>
+</ContentPage>
