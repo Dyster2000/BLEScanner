@@ -117,6 +117,10 @@ namespace BLE.Client.Maui.ViewModels
             Adapter.ScanTimeoutElapsed += Adapter_ScanTimeoutElapsed;
             Adapter.DeviceAdvertised += OnDeviceAdvertised;
             Adapter.DeviceDiscovered += OnDeviceDiscovered;
+            Adapter.DeviceConnected += OnDeviceConnected;
+            Adapter.DeviceDisconnected += OnDeviceDisconnected;
+            Adapter.DeviceConnectionError += OnDeviceConnectionError;
+            Adapter.DeviceConnectionLost += OnDeviceConnectionLost;
             DebugMessage("Configuring BLE... DONE");
         }
         private void OnBluetoothStateChanged(object sender, BluetoothStateChangedArgs e)
@@ -143,6 +147,26 @@ namespace BLE.Client.Maui.ViewModels
         private void OnDeviceDiscovered(object sender, DeviceEventArgs args)
         {
             AddOrUpdateDevice(args.Device);
+        }
+
+        private void OnDeviceConnected(object sender, DeviceEventArgs args)
+        {
+            DebugMessage($"DeviceConnected: {args.Device.Name}:{args.Device.Id}");
+        }
+
+        private void OnDeviceDisconnected(object sender, DeviceEventArgs args)
+        {
+            DebugMessage($"DeviceDisconnected: {args.Device.Name}:{args.Device.Id}");
+        }
+
+        private void OnDeviceConnectionError(object sender, DeviceEventArgs args)
+        {
+            DebugMessage($"DeviceConnectionError: {args.Device.Name}:{args.Device.Id}");
+        }
+
+        private void OnDeviceConnectionLost(object sender, DeviceEventArgs args)
+        {
+            DebugMessage($"DeviceConnectionLost: {args.Device.Name}:{args.Device.Id}");
         }
 
         private void AddOrUpdateDevice(IDevice device)

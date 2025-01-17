@@ -5,18 +5,21 @@
              x:DataType="{x:Type vm:LogViewModel}"
              x:Class="BLE.Client.Maui.Views.LogViewer"
              Title="Log Viewer">
-    <StackLayout>
-        <Button Text="Clear" FontSize="32" Command="{Binding ClearLogMessages}" Margin="5,5,5,8"/>
-        <ListView Margin="5,0,5,5"
+  <StackLayout>
+    <StackLayout Orientation="Horizontal">
+      <Button Text="Clear" FontSize="32" Command="{Binding ClearLogMessages}" Margin="5,5,5,8"/>
+      <Button Text="Copy to Clipboard" FontSize="32" Command="{Binding CopyToClipboard}" Margin="5,5,5,8"/>
+    </StackLayout>
+    <ListView Margin="5,0,5,5"
                   ItemsSource="{x:Static vm:LogViewModel.Messages}"
                   HasUnevenRows="True" SelectionMode="None">
-            <ListView.ItemTemplate>
-                <DataTemplate>
-                    <ViewCell>
-                        <Label Text="{Binding .}" Margin="0, 2"/>
-                    </ViewCell>
-                </DataTemplate>
-            </ListView.ItemTemplate>
-        </ListView>
-    </StackLayout>
+      <ListView.ItemTemplate>
+        <DataTemplate>
+          <ViewCell>
+            <Label Text="{Binding .}" Margin="0, 2"/>
+          </ViewCell>
+        </DataTemplate>
+      </ListView.ItemTemplate>
+    </ListView>
+  </StackLayout>
 </ContentPage>
