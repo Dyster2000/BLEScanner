@@ -70,9 +70,9 @@ namespace BLE.Client.Maui.ViewModels
                     AddService(servicesListReadOnly[i]);
                 }
             }
-            catch
+            catch (Exception ex)
             {
-                DebugMessage($"Error in GetServicesAsync() for selected service {_connectedDevice.Id}");
+                DebugMessage($"Error in GetServicesAsync() for selected service {_connectedDevice.Id} - Error: {ex}");
             }
 
             return true;
@@ -90,9 +90,9 @@ namespace BLE.Client.Maui.ViewModels
                     AddCharacteristic(characteristicListReadOnly[i]);
                 }
             }
-            catch
+            catch (Exception ex)
             {
-                DebugMessage($"Error in GetCharacteristicsAsync() for selected service {selected.Service.Id}");
+                DebugMessage($"Error in GetCharacteristicsAsync() for selected service {selected.Service.Id} - Error: {ex}");
             }
         }
 

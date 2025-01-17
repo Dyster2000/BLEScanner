@@ -22,6 +22,7 @@ public partial class BLEServices : ContentPage
 
     private void Service_SelectionChanged(object sender, SelectionChangedEventArgs e)
     {
-        _viewModel.ServiceSelectionChanged(e.CurrentSelection[0] as BLEServiceViewModel);
+        if (e.CurrentSelection.Count > 0)
+            _viewModel.ServiceSelectionChanged(e.CurrentSelection[0] as BLEServiceViewModel);
     }
 }
