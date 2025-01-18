@@ -6,8 +6,6 @@ namespace BLE.Client.Maui.ViewModels
 {
 	public class BLEDeviceViewModel : BaseViewModel
     {
-        public IDevice Device { get; private set; }
-
         private Guid _deviceId = new();
         public Guid DeviceId
         {
@@ -86,7 +84,6 @@ namespace BLE.Client.Maui.ViewModels
 
         public BLEDeviceViewModel(IDevice device)
         {
-            Device = device;
             DeviceId = device.Id;
             Update(device);
         }

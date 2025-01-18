@@ -7,8 +7,6 @@ namespace BLE.Client.Maui.ViewModels
 {
     public class BLEServiceViewModel : BaseViewModel
     {
-        public IService Service { get; private set; }
-
         private readonly Guid DominoService = new Guid("faa94de0-cd7c-43fa-b71d-40324ff9ab2b");
 
         private Guid _serviceId = new();
@@ -41,7 +39,6 @@ namespace BLE.Client.Maui.ViewModels
 
         public BLEServiceViewModel(IService service)
         {
-            Service = service;
             ServiceId = service.Id;
             if (ServiceId == DominoService)
                 Name = "** HackPack Domino Service **";

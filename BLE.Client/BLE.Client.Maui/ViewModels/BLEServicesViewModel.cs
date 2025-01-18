@@ -32,11 +32,8 @@ namespace BLE.Client.Maui.ViewModels
             }
         }
 
-        private IDevice _connectedDevice; // Pointer for the connected BLE Device
-
         public BLEServicesViewModel()
         {
-            _connectedDevice = null;
             _bluetoothManager = CrossBluetoothLE.Current;
             Adapter = _bluetoothManager?.Adapter;
 
@@ -54,46 +51,100 @@ namespace BLE.Client.Maui.ViewModels
         {
             if (BLEScannerViewModel.CurrentDevice == null)
                 return false;
-            _connectedDevice = await Adapter.ConnectToKnownDeviceAsync(BLEScannerViewModel.CurrentDevice.DeviceId);
 
-            if (_connectedDevice == null)
-                return false;
-            SelectedDeviceName = "Selected BLE Device: " + BLEScannerViewModel.CurrentDevice.Name;
+            BLEServices.Clear();
 
-            try
+            bool connectionLost = false;
+            Adapter.DeviceConnectionLost += (o, e) =>
             {
-                var servicesListReadOnly = await _connectedDevice.GetServicesAsync(); // Read in the Services available
+                if (e.Device.Id == BLEScannerViewModel.CurrentDevice.DeviceId)
+                    connectionLost = true;
+            };
 
+            do
+            {
+                connectionLost = false;
                 BLEServices.Clear();
-                for (int i = 0; i < servicesListReadOnly.Count; i++)
+
+                var connectedDevice = await Adapter.ConnectToKnownDeviceAsync(BLEScannerViewModel.CurrentDevice.DeviceId);
+
+                if (connectedDevice == null)
                 {
-                    AddService(servicesListReadOnly[i]);
+                    DebugMessage($"Failed to connect to device {BLEScannerViewModel.CurrentDevice.Name}:{BLEScannerViewModel.CurrentDevice.DeviceId}");
+                    SelectedDeviceName = $"Selected BLE Device: {BLEScannerViewModel.CurrentDevice.DeviceId} NOT FOUND";
+                    return false;
                 }
-            }
-            catch (Exception ex)
-            {
-                DebugMessage($"Error in GetServicesAsync() for selected service {_connectedDevice.Id} - Error: {ex}");
-            }
+                SelectedDeviceName = "Selected BLE Device: " + BLEScannerViewModel.CurrentDevice.Name;
+
+                try
+                {
+                    var servicesListReadOnly = await connectedDevice.GetServicesAsync(); // Read in the Services available
+
+                    for (int i = 0; i < servicesListReadOnly.Count; i++)
+                    {
+                        AddService(servicesListReadOnly[i]);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    DebugMessage($"Error in GetServicesAsync() for selected device {BLEScannerViewModel.CurrentDevice.DeviceId} - Error: {ex}");
+                }
+                // If we made it through the end without loosing connection we are good. Otherwise try again
+            } while (connectionLost);
 
             return true;
         }
 
         public async void ServiceSelectionChanged(BLEServiceViewModel selected)
         {
-            try
-            {
-                var characteristicListReadOnly = await selected.Service.GetCharacteristicsAsync(); // Read in the Characteristics available
+            if (BLEScannerViewModel.CurrentDevice == null)
+                return;
 
-                BLECharacteristics.Clear();
-                for (int i = 0; i < characteristicListReadOnly.Count; i++)
-                {
-                    AddCharacteristic(characteristicListReadOnly[i]);
-                }
-            }
-            catch (Exception ex)
+            BLECharacteristics.Clear();
+
+            bool connectionLost = false;
+            Adapter.DeviceConnectionLost += (o, e) =>
             {
-                DebugMessage($"Error in GetCharacteristicsAsync() for selected service {selected.Service.Id} - Error: {ex}");
-            }
+                if (e.Device.Id == BLEScannerViewModel.CurrentDevice.DeviceId)
+                    connectionLost = true;
+            };
+
+            do
+            {
+                connectionLost = false;
+                BLECharacteristics.Clear();
+
+                var connectedDevice = await Adapter.ConnectToKnownDeviceAsync(BLEScannerViewModel.CurrentDevice.DeviceId);
+
+                if (connectedDevice == null)
+                {
+                    DebugMessage($"[ServiceSelectionChanged] Failed to connect to device {BLEScannerViewModel.CurrentDevice.Name}:{BLEScannerViewModel.CurrentDevice.DeviceId}");
+                    return;
+                }
+
+                try
+                {
+                    var service = await connectedDevice.GetServiceAsync(selected.ServiceId);
+
+                    if (service == null)
+                    {
+                        DebugMessage($"[ServiceSelectionChanged] Failed to find service {selected.Name}:{selected.ServiceId}");
+                        break;
+                    }
+
+                    var characteristicListReadOnly = await service.GetCharacteristicsAsync(); // Read in the Characteristics available
+
+                    for (int i = 0; i < characteristicListReadOnly.Count; i++)
+                    {
+                        AddCharacteristic(characteristicListReadOnly[i]);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    DebugMessage($"Error getting characteristics for {selected.Name}:{selected.ServiceId} - Error: {ex}");
+                }
+                // If we made it through the end without loosing connection we are good. Otherwise try again
+            } while (connectionLost);
         }
 
         private void AddService(IService service)
